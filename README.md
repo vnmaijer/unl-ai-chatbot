@@ -1,7 +1,7 @@
 
 # UNL AI Chatbot (Flask)
 
-## Instructies
+## Instructies 
 
 1. Voeg de volgende environment variables toe aan je Azure Web App:
    - `CLIENT_ID` = jouw Azure AD App Client ID
