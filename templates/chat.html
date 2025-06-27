@@ -1,0 +1,26 @@
+
+<!doctype html>
+<html>
+  <head><title>UNL AI Chatbot</title></head>
+  <body>
+    <h1>Welkom, {{ user['name'] }}</h1>
+    <form method="post" action="/chat" id="chat-form">
+      <input type="text" name="question" placeholder="Typ je vraag..." style="width:300px;">
+      <button type="submit">Verstuur</button>
+    </form>
+    <div id="response" style="margin-top:20px;"></div>
+    <script>
+      document.getElementById("chat-form").onsubmit = async (e) => {
+        e.preventDefault();
+        const form = e.target;
+        const formData = new FormData(form);
+        const response = await fetch("/chat", {
+          method: "POST",
+          body: formData
+        });
+        const result = await response.json();
+        document.getElementById("response").innerText = result.answer;
+      };
+    </script>
+  </body>
+</html>
