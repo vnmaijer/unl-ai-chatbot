@@ -1,3 +1,4 @@
+
 from flask import Flask, redirect, url_for, session, request, render_template
 from flask_session import Session
 import msal
@@ -6,9 +7,12 @@ import os
 from werkzeug.middleware.proxy_fix import ProxyFix
 
 app = Flask(__name__)
-app.wsgi_app = ProxyFix(app.wsgi_app, x_proto=1, x_host=1)  # Zorg dat Flask HTTPS respecteert achter proxy
+app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1)
 
 app.config["SESSION_TYPE"] = "filesystem"
+app.config["APPLICATION_ROOT"] = "/"
+app.config["PREFERRED_URL_SCHEME"] = "https"
+
 Session(app)
 
 CLIENT_ID = os.getenv("CLIENT_ID")
