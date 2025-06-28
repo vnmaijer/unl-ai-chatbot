@@ -8,9 +8,7 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1)
 
-# Zorg dat Flask de juiste host en https gebruikt
 app.config["SESSION_TYPE"] = "filesystem"
-app.config["SERVER_NAME"] = "unl-ai-chatbot.azurewebsites.net"
 app.config["PREFERRED_URL_SCHEME"] = "https"
 
 Session(app)
@@ -26,11 +24,8 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 
 def _build_msal_app(cache=None):
     return msal.ConfidentialClientApplication(
-        CLIENT_ID,
-        authority=AUTHORITY,
-        client_credential=CLIENT_SECRET,
-        token_cache=cache
-    )
+        CLIENT_ID, authority=AUTHORITY,
+        client_credential=CLIENT_SECRET, token_cache=cache)
 
 def _build_auth_url():
     return _build_msal_app().get_authorization_request_url(
@@ -55,7 +50,7 @@ def login():
 def authorized():
     cache = msal.SerializableTokenCache()
     result = _build_msal_app(cache).acquire_token_by_authorization_code(
-        request.args['code'],
+        request.args.get("code"),
         scopes=SCOPE,
         redirect_uri=url_for("authorized", _external=True)
     )
