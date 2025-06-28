@@ -8,8 +8,9 @@ from werkzeug.middleware.proxy_fix import ProxyFix
 app = Flask(__name__)
 app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1, x_host=1, x_port=1)
 
+# Zorg dat Flask de juiste host en https gebruikt
 app.config["SESSION_TYPE"] = "filesystem"
-app.config["APPLICATION_ROOT"] = "/"
+app.config["SERVER_NAME"] = "unl-ai-chatbot.azurewebsites.net"
 app.config["PREFERRED_URL_SCHEME"] = "https"
 
 Session(app)
@@ -18,19 +19,24 @@ CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 TENANT_ID = os.getenv("TENANT_ID")
 AUTHORITY = f"https://login.microsoftonline.com/{TENANT_ID}"
-REDIRECT_PATH = "/auth-redirect"  # aangepaste redirectroute
+REDIRECT_PATH = "/auth-redirect"
 SCOPE = ["User.Read"]
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 def _build_msal_app(cache=None):
     return msal.ConfidentialClientApplication(
-        CLIENT_ID, authority=AUTHORITY,
-        client_credential=CLIENT_SECRET, token_cache=cache)
+        CLIENT_ID,
+        authority=AUTHORITY,
+        client_credential=CLIENT_SECRET,
+        token_cache=cache
+    )
 
 def _build_auth_url():
     return _build_msal_app().get_authorization_request_url(
-        SCOPE, redirect_uri=url_for("authorized", _external=True))
+        SCOPE,
+        redirect_uri=url_for("authorized", _external=True)
+    )
 
 @app.route("/")
 def index():
@@ -55,7 +61,9 @@ def authorized():
     )
     if "id_token_claims" in result:
         session["user"] = result["id_token_claims"]
-    return redirect(url_for("index"))
+        return redirect(url_for("index"))
+    else:
+        return f"Login failed: {result}"
 
 @app.route("/chat", methods=["POST"])
 def chat():
