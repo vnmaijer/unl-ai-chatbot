@@ -1,4 +1,3 @@
-
 from flask import Flask, redirect, url_for, session, request, render_template
 from flask_session import Session
 import msal
@@ -19,7 +18,7 @@ CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 TENANT_ID = os.getenv("TENANT_ID")
 AUTHORITY = f"https://login.microsoftonline.com/{TENANT_ID}"
-REDIRECT_PATH = "/login"
+REDIRECT_PATH = "/auth-redirect"  # aangepaste redirectroute
 SCOPE = ["User.Read"]
 
 openai.api_key = os.getenv("OPENAI_API_KEY")
