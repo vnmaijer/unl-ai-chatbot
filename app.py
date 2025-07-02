@@ -20,7 +20,10 @@ AUTHORITY = f"https://login.microsoftonline.com/{TENANT_ID}"
 REDIRECT_PATH = "/auth-redirect"
 SCOPE = ["User.Read"]
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+# Initialize OpenAI client using the v1 interface
+client = openai.OpenAI(
+    api_key=os.getenv("OPENAI_API_KEY")
+)
 
 def _build_msal_app(cache=None):
     return msal.ConfidentialClientApplication(
@@ -67,7 +70,7 @@ def chat():
     question = request.form.get("question")
     if not question:
         return "No input", 400
-    response = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="gpt-4",
         messages=[{"role": "user", "content": question}]
     )
