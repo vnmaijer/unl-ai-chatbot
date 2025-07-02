@@ -1,5 +1,5 @@
 
 Flask
 Flask-Session
-openai
+openai>=1.0.0
 msal
